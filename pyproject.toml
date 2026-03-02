@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "copperline"
+version = "0.1.0"
+description = "Self-hosted double-entry accounting, invoicing, inventory, banking, and reconciliation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Copperline contributors"}]
+keywords = ["accounting", "bookkeeping", "invoicing", "inventory", "reconciliation", "sqlite"]
+dependencies = []
+
+
+[project.optional-dependencies]
+dev = [
+  "pytest==8.3.5",
+  "ruff==0.11.2",
+  "mypy==1.15.0",
+]
+
+[project.scripts]
+copperline = "copperline.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
