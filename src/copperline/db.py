@@ -110,8 +110,7 @@ class Database:
                 ) from exc
 
     def execute(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
-        with self._lock:
-            return self._conn.execute(sql, parameters)
+        return self._execute_locked(sql, parameters)
 
     def executemany(self, sql: str, rows: list[tuple[Any, ...]]) -> sqlite3.Cursor:
         with self._lock:
@@ -122,16 +121,14 @@ class Database:
         sql: str,
         parameters: tuple[Any, ...] = (),
     ) -> sqlite3.Row | None:
-        with self._lock:
-            return self._conn.execute(sql, parameters).fetchone()
+        return self._one_locked(sql, parameters)
 
     def all(
         self,
         sql: str,
         parameters: tuple[Any, ...] = (),
     ) -> list[sqlite3.Row]:
-        with self._lock:
-            return list(self._conn.execute(sql, parameters).fetchall())
+        return self._all_locked(sql, parameters)
 
     def scalar(
         self,
@@ -167,7 +164,7 @@ class Database:
             destination.close()
 
     def integrity_check(self) -> list[str]:
-        return [str(row[0]) for row in self._conn.execute("PRAGMA integrity_check")]
+        return [str(row[0]) for row in self._all_locked("PRAGMA integrity_check")]
 
     def table_counts(self) -> dict[str, int]:
         tables = [
@@ -185,6 +182,30 @@ class Database:
             table: int(self.scalar(f'SELECT COUNT(*) FROM "{table}"', default=0))
             for table in tables
         }
+
+    def _execute_locked(
+        self,
+        sql: str,
+        parameters: tuple[Any, ...] = (),
+    ) -> sqlite3.Cursor:
+        with self._lock:
+            return self._conn.execute(sql, parameters)
+
+    def _one_locked(
+        self,
+        sql: str,
+        parameters: tuple[Any, ...] = (),
+    ) -> sqlite3.Row | None:
+        with self._lock:
+            return self._conn.execute(sql, parameters).fetchone()
+
+    def _all_locked(
+        self,
+        sql: str,
+        parameters: tuple[Any, ...] = (),
+    ) -> list[sqlite3.Row]:
+        with self._lock:
+            return list(self._conn.execute(sql, parameters).fetchall())
 
 
 def _statements(script: str) -> list[str]:
