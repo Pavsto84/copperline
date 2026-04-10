@@ -699,7 +699,7 @@ class InventoryService:
         for index, row in enumerate(rows):
             available = Decimal(str(row["remaining_quantity"]))
             if index == len(rows) - 1:
-                use = remaining
+                use = min(available, remaining)
             else:
                 use = min(
                     available,
@@ -715,17 +715,29 @@ class InventoryService:
             )
             result.append((str(row["id"]), use, average))
             remaining -= use
-        if remaining != 0:
-            # Rounding residual is applied to the newest layer with capacity.
-            layer_id, used, unit = result[-1]
-            row = self.db.one("SELECT remaining_quantity FROM cost_layers WHERE id=?", (layer_id,))
-            assert row is not None
-            current = Decimal(str(row["remaining_quantity"]))
-            self.db.execute(
-                "UPDATE cost_layers SET remaining_quantity=? WHERE id=?",
-                (format(current - remaining, "f"), layer_id),
-            )
-            result[-1] = (layer_id, used + remaining, unit)
+        if remaining > 0:
+            # Apply any rounding residual only to layers that still have capacity.
+            for result_index in range(len(result) - 1, -1, -1):
+                layer_id, used, unit = result[result_index]
+                row = self.db.one(
+                    "SELECT remaining_quantity FROM cost_layers WHERE id=?",
+                    (layer_id,),
+                )
+                assert row is not None
+                current = Decimal(str(row["remaining_quantity"]))
+                adjustment = min(remaining, current)
+                if adjustment <= 0:
+                    continue
+                self.db.execute(
+                    "UPDATE cost_layers SET remaining_quantity=? WHERE id=?",
+                    (format(current - adjustment, "f"), layer_id),
+                )
+                result[result_index] = (layer_id, used + adjustment, unit)
+                remaining -= adjustment
+                if remaining == 0:
+                    break
+        if remaining > 0:
+            raise InsufficientStockError("cost layers do not cover quantity on hand")
         return result
 
     def _create_layer(
