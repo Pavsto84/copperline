@@ -87,19 +87,17 @@ class ReportService:
         for account in self.accounts.list(active=None):
             if account.type not in {AccountType.REVENUE, AccountType.EXPENSE}:
                 continue
-            debit, credit = self._debit_credit_dimensions(
-                account.id,
+            amount = self._actual_activity_amount(
+                account,
                 period.start,
                 period.end,
-                dimensions,
+                dimensions=dimensions,
             )
             if account.type == AccountType.REVENUE:
-                amount = credit - debit
                 if amount.amount:
                     revenue_rows.append(self._account_amount_row(account, amount))
                     revenue_total += amount
             else:
-                amount = debit - credit
                 if amount.amount:
                     expense_rows.append(self._account_amount_row(account, amount))
                     expense_total += amount
@@ -389,13 +387,10 @@ class ReportService:
             if account.type not in {AccountType.REVENUE, AccountType.EXPENSE}:
                 continue
             planned = budget_totals.get(account.id, Money.zero(budget.currency))
-            debit, credit = self.ledger.raw_debit_credit(
-                account.id,
-                start=period.start,
-                end=period.end,
-            )
-            actual = (
-                credit - debit if account.type == AccountType.REVENUE else debit - credit
+            actual = self._actual_activity_amount(
+                account,
+                period.start,
+                period.end,
             )
             if planned.is_zero() and actual.is_zero():
                 continue
@@ -467,6 +462,33 @@ class ReportService:
             Money.from_minor(debit_minor, account.currency),
             Money.from_minor(credit_minor, account.currency),
         )
+
+    def _actual_activity_amount(
+        self,
+        account: Any,
+        start: date,
+        end: date,
+        *,
+        dimensions: dict[str, str] | None = None,
+    ) -> Money:
+        if dimensions:
+            debit, credit = self._debit_credit_dimensions(
+                account.id,
+                start,
+                end,
+                dimensions,
+            )
+        else:
+            debit, credit = self.ledger.raw_debit_credit(
+                account.id,
+                start=start,
+                end=end,
+            )
+        if account.type == AccountType.REVENUE:
+            return credit - debit
+        if account.type == AccountType.EXPENSE:
+            return debit - credit
+        return Money.zero(account.currency)
 
     @staticmethod
     def _account_amount_row(account: Any, amount: Money) -> dict[str, Any]:
