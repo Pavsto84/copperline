@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from copperline import Copperline
+from copperline.backup import BackupService
 from copperline.models import InvoiceLine, PaymentAllocation
 from copperline.money import Money
 
@@ -61,6 +62,14 @@ class BusinessLifecycleTests(unittest.TestCase):
                 allocations=[PaymentAllocation(invoice.id, Money("60", "USD"))],
             )
             self.assertEqual(app.invoices.outstanding(invoice.id), Money.zero("USD"))
+            archive = Path(tmp) / "lifecycle-backup.tar.gz"
+            app.backups.archive(archive, metadata={"scenario": "lifecycle"})
+            backup_report = BackupService.verify_archive(archive)
+            self.assertTrue(backup_report["valid"])
+            self.assertEqual(
+                backup_report["manifest"]["metadata"]["scenario"],
+                "lifecycle",
+            )
             app.close()
 
             reopened = Copperline(path)
