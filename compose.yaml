@@ -1,0 +1,11 @@
+services:
+  copperline:
+    build: .
+    ports:
+      - "8790:8790"
+    volumes:
+      - copperline-data:/data
+    restart: unless-stopped
+
+volumes:
+  copperline-data:
