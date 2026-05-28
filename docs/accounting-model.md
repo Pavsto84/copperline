@@ -24,6 +24,10 @@ Liabilities, equity, and revenue have credit normal balances.
 
 Posted entries are not edited in place. Corrections use reversal entries.
 
+## Release review focus
+
+Before release, sample journal entries should be traced from business documents through posted ledger lines and reports. The important invariant is that every document affecting the books produces balanced debit and credit totals without bypassing period locks.
+
 Draft entries can be voided because they have not entered accounting history.
 
 ## Period locks

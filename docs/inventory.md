@@ -58,3 +58,7 @@ sum(remaining quantity * unit cost)
 ```
 
 Operational procedures should periodically compare the inventory valuation report with the inventory asset general-ledger account.
+
+## Release review focus
+
+For release validation, cover both FIFO and moving-average items with receipts, issues, transfers, and adjustments. Reconcile the inventory valuation report to the configured inventory asset account after each stock movement scenario.

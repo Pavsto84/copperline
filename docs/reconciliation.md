@@ -44,3 +44,7 @@ By default, every imported bank transaction through the statement date must also
 ## Unmatching
 
 A matched transaction can be returned to unmatched state without reversing the accounting entry. Reconciliation links are operational metadata, not ledger postings.
+
+## Release review focus
+
+Release checks should include duplicate statement imports, one-to-one matching safeguards, ignored transactions with reasons, and a completed statement session whose ledger balance matches the supplied ending balance.

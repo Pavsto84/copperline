@@ -24,6 +24,10 @@ Money is always `(Decimal amount, currency)`. Currency precision is applied at o
 
 No business service is allowed to directly update account balances.
 
+## Release review focus
+
+For the 0.1.0 baseline, architecture review should verify that business services only post through `LedgerService`, share one `Database` instance through the facade, and keep HTTP/CLI adapters thin enough that accounting behavior remains covered at the service layer.
+
 ### Business subledgers
 
 - `invoices.py`

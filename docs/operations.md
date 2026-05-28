@@ -74,3 +74,7 @@ At minimum monitor:
 - overdue receivables
 - locked-period status
 - HTTP 5xx rate at the reverse proxy
+
+## Release review focus
+
+The release checklist should prove that a fresh install can bootstrap a company, pass `doctor`, create a backup archive, verify the archive manifest, and restore enough data to run a trial balance after restart.

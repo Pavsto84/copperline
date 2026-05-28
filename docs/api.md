@@ -84,3 +84,7 @@ HTTP mapping:
 - conflict -> 409
 - validation -> 400
 - other domain error -> 422
+
+## Release review focus
+
+Before publishing the API surface, exercise public health checks, unauthorized requests, scoped API keys, write endpoints for accounts and invoices, report reads, and representative validation failures through real HTTP requests.
