@@ -1,6 +1,6 @@
 # Bank reconciliation
 
-Copperline separates imported bank observations from accounting journals.
+Copperline keeps imported bank activity separate from accounting journals.
 
 An imported transaction does not post to the ledger by itself.
 
@@ -25,7 +25,7 @@ Auto-match requires:
 - no existing bank transaction matched to that journal entry
 - exact bank/ledger amount unless explicitly overridden
 
-The conservative policy is intentional.
+This is intentionally conservative.
 
 ## Statement session
 
@@ -45,6 +45,6 @@ By default, every imported bank transaction through the statement date must also
 
 A matched transaction can be returned to unmatched state without reversing the accounting entry. Reconciliation links are operational metadata, not ledger postings.
 
-## Release review focus
+## Practical checks
 
-Release checks should include duplicate statement imports, one-to-one matching safeguards, ignored transactions with reasons, and a completed statement session whose ledger balance matches the supplied ending balance.
+Reconciliation tests should cover duplicate statement imports, one-to-one matching safeguards, ignored transactions with reasons, and a completed statement session whose ledger balance matches the supplied ending balance.

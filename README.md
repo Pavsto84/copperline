@@ -1,10 +1,10 @@
 # Copperline
 
-Copperline is a self-hosted accounting platform for small businesses, internal finance teams, and developers who need a trustworthy local accounting core without operating a separate database server.
+Copperline is a local-first accounting system for small businesses, internal finance teams, and developers who want the books in a plain SQLite file.
 
-It is written in Python and uses SQLite as its default persistence layer. The repository is a real application rather than a tutorial ledger: it includes double-entry journals, period locks, customers/vendors, sales and purchase invoices, tax calculation, payments and allocations, inventory costing, bank statement imports, bank-to-ledger reconciliation, foreign exchange quotes, budgets, financial reports, API keys, a JSON HTTP API, CSV/OFX import, portable exports, consistent backups, audit records, and a CLI.
+It is written in Python and ships with the pieces needed to run a small set of books: journals, period locks, customers and vendors, invoices, payments, inventory costing, bank imports, reconciliation, budgets, reports, API keys, an HTTP API, exports, backups, audit records, and a CLI.
 
-Copperline deliberately separates **accounting truth** from presentation. Every business document that affects the books posts a balanced journal entry, and all financial reports are derived from posted journal lines rather than duplicate summary tables.
+The ledger is the source of truth. Documents such as invoices, payments, stock issues, and receipts post balanced journal entries, and reports read posted journal lines instead of trusting summary totals.
 
 ## Features
 
@@ -86,7 +86,7 @@ Copperline deliberately separates **accounting truth** from presentation. Every 
 ### Operations
 
 - scoped API keys using scrypt hashes
-- dependency-free threaded HTTP JSON API
+- standard-library HTTP JSON API
 - CLI for bookkeeping and administration
 - JSON and CSV exports
 - canonical snapshot export
@@ -97,11 +97,11 @@ Copperline deliberately separates **accounting truth** from presentation. Every 
 - audit export
 - health endpoint
 - Docker and Compose examples
-- Python 3.11–3.13 CI matrix
+- Python 3.11-3.13 CI matrix
 
 ## Why SQLite?
 
-Copperline targets a deployment class that is often underserved: one business or one internal team running accounting on a single server, desktop, VM, or small container host.
+Copperline is meant for one business or one internal team running accounting on a single server, desktop, VM, or small container host.
 
 SQLite gives Copperline:
 
@@ -113,7 +113,7 @@ SQLite gives Copperline:
 - no separate database daemon
 - a database file that is easy to move and inspect
 
-Copperline enables WAL mode for file databases and uses explicit transactions for accounting operations. It is **not** presented as a globally distributed accounting database. Do not place one SQLite file on an unreliable network filesystem and let multiple hosts write it concurrently.
+Copperline enables WAL mode for file databases and uses explicit transactions for accounting operations. It is not a distributed accounting database. Keep the SQLite file on local storage, and do not let several hosts write the same file over an unreliable network filesystem.
 
 ## Requirements
 
@@ -357,7 +357,7 @@ curl -H "Authorization: Bearer cl_key_..." \
   http://127.0.0.1:8790/v1/accounts
 ```
 
-The API is dependency-free and implemented with Python's standard `http.server`. It is suitable behind a TLS reverse proxy for small self-hosted installations.
+The API uses Python's standard `http.server`. For anything outside localhost, put it behind a TLS reverse proxy.
 
 See [docs/api.md](docs/api.md).
 
@@ -395,7 +395,7 @@ Snapshot export is a portable inspection format, not a transactionally replayabl
 
 ## Architecture
 
-The package intentionally uses services rather than a monolithic ORM model.
+The package uses services instead of a monolithic ORM model.
 
 ```text
                          CLI / HTTP API
@@ -426,7 +426,7 @@ See [docs/architecture.md](docs/architecture.md) and [docs/accounting-model.md](
 
 ## Testing
 
-The project uses standard-library `unittest`, so the runtime test suite needs no third-party package.
+The runtime test suite uses standard-library `unittest`.
 
 ```bash
 PYTHONPATH=src:. python -m unittest discover -s tests -t . -v
@@ -436,7 +436,7 @@ The suite covers unit math, journals, locks, taxes, invoices, payments, inventor
 
 ## Release status
 
-`0.1.0` is an alpha-quality release baseline. It is useful for real bookkeeping experiments and internal deployments, but any organization with statutory reporting requirements should review local tax/accounting compliance before relying on it for filings.
+`0.1.0` is an alpha baseline. It is useful for bookkeeping experiments and internal deployments. Organizations with filing obligations should review local tax and accounting requirements before relying on it for statutory reports.
 
 Areas intentionally left for future versions include payroll, fixed assets/depreciation, purchase orders, sales orders, multi-entity consolidation, and a network-database adapter.
 

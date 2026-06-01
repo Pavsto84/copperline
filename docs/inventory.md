@@ -1,6 +1,6 @@
 # Inventory
 
-Copperline tracks quantity and accounting value together.
+Copperline tracks stock quantity and accounting value together.
 
 ## Items
 
@@ -28,7 +28,7 @@ Moving-average items value an issue at:
 current inventory value / current quantity
 ```
 
-Underlying layers are proportionally reduced so the subledger continues to tie to the remaining valuation.
+Underlying layers are reduced proportionally so the subledger still ties to the remaining valuation.
 
 ## Transfers
 
@@ -59,6 +59,6 @@ sum(remaining quantity * unit cost)
 
 Operational procedures should periodically compare the inventory valuation report with the inventory asset general-ledger account.
 
-## Release review focus
+## Practical checks
 
-For release validation, cover both FIFO and moving-average items with receipts, issues, transfers, and adjustments. Reconcile the inventory valuation report to the configured inventory asset account after each stock movement scenario.
+For FIFO and moving-average items, test receipts, issues, transfers, and adjustments. After each scenario, compare the inventory valuation report with the configured inventory asset account.

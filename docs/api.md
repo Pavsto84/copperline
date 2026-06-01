@@ -6,7 +6,7 @@ Start:
 copperline --db company.sqlite serve --host 127.0.0.1 --port 8790
 ```
 
-Create a scoped API key with the CLI first.
+Create an API key with the CLI first.
 
 Authenticated requests use:
 
@@ -85,6 +85,6 @@ HTTP mapping:
 - validation -> 400
 - other domain error -> 422
 
-## Release review focus
+## Smoke test
 
-Before publishing the API surface, exercise public health checks, unauthorized requests, scoped API keys, write endpoints for accounts and invoices, report reads, and representative validation failures through real HTTP requests.
+Before exposing the API, test the health check, unauthorized requests, scoped API keys, account and invoice writes, report reads, and representative validation failures through real HTTP requests.

@@ -1,6 +1,6 @@
 # Architecture
 
-Copperline is organized around domain services sharing one transactional SQLite database.
+Copperline is built from domain services that share one transactional SQLite database.
 
 ## Layers
 
@@ -24,10 +24,6 @@ Money is always `(Decimal amount, currency)`. Currency precision is applied at o
 
 No business service is allowed to directly update account balances.
 
-## Release review focus
-
-For the 0.1.0 baseline, architecture review should verify that business services only post through `LedgerService`, share one `Database` instance through the facade, and keep HTTP/CLI adapters thin enough that accounting behavior remains covered at the service layer.
-
 ### Business subledgers
 
 - `invoices.py`
@@ -38,7 +34,7 @@ For the 0.1.0 baseline, architecture review should verify that business services
 - `budget.py`
 - `fx.py`
 
-Subledgers keep operational detail and post balanced journals when accounting value changes.
+Subledgers keep operational detail. When a change affects accounting value, they post through `LedgerService`.
 
 ### Reports
 
@@ -50,11 +46,11 @@ Subledgers keep operational detail and post balanced journals when accounting va
 - `http/server.py`
 - `service.py`
 
-The `Copperline` facade wires the same services for embedded Python use.
+The `Copperline` facade wires these services for embedded Python use.
 
 ## Transaction boundaries
 
-A high-level business operation typically runs in one `BEGIN IMMEDIATE` transaction. Nested service calls use SQLite savepoints.
+A business operation typically runs in one `BEGIN IMMEDIATE` transaction. Nested service calls use SQLite savepoints.
 
 Examples:
 

@@ -22,7 +22,7 @@ Keep `company.sqlite`, `company.sqlite-wal`, and `company.sqlite-shm` on the sam
 
 ## Backup
 
-Prefer Copperline's online backup command while the service is live.
+Use Copperline's online backup command while the service is live.
 
 Test restore procedures, not only backup creation.
 
@@ -75,6 +75,6 @@ At minimum monitor:
 - locked-period status
 - HTTP 5xx rate at the reverse proxy
 
-## Release review focus
+## Smoke test
 
-The release checklist should prove that a fresh install can bootstrap a company, pass `doctor`, create a backup archive, verify the archive manifest, and restore enough data to run a trial balance after restart.
+For a fresh install, bootstrap a company, run `doctor`, create a backup archive, verify the manifest, restore it, and run a trial balance after restart.
